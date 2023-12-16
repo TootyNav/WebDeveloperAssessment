@@ -1,4 +1,9 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using WebDeveloperAssessment.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<WebDeveloperAssessmentContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("WebDeveloperAssessmentContext") ?? throw new InvalidOperationException("Connection string 'WebDeveloperAssessmentContext' not found.")));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
