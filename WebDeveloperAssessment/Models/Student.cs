@@ -11,6 +11,7 @@ namespace WebDeveloperAssessment.Models
 
         [Display(Name = "Year of Study")]
         public required string YearOfStudy { get; set; }
+        public virtual ICollection<StudentSubject> StudentSubjects { get; set; }
 
     }
 }

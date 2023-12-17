@@ -26,7 +26,7 @@ namespace WebDeveloperAssessment.Services
 
         public async Task<Student?> GetStudentById(int id)
         {
-            return await _context.Student.FindAsync(id);
+            return await _context.Student.Include(x => x.StudentSubjects).ThenInclude(x => x.Subject).FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task CreateStudent(Student student)
