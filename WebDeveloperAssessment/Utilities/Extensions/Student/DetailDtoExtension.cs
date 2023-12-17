@@ -5,30 +5,30 @@ using System.Collections.Generic;
 
 namespace WebDeveloperAssessment.Utilities.Extensions;
 
-    public static class EditDtoExtension
+public static class DetailDtoExtension
 {
-    public static EditDto GetStudentEditDto(this Models.Student student, int selectedYearOfStudy, IEnumerable<YearOfStudy> yearOfStudyList)
+    public static Student GetStudentEntity(this DetailDto student, IEnumerable<YearOfStudy> yearOfStudyList)
     {
-        return new EditDto()
+        return new Student()
         {
             Id = student.Id,
             FirstName = student.FirstName,
             LastName = student.LastName,
             Dob = student.Dob,
-            SelectedYearOfStudy = selectedYearOfStudy,
-            YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year")
+            YearOfStudy = student.YearOfStudy,
         };
     }
 
-    public static Models.Student GetStudentEntity(this EditDto student, IEnumerable<YearOfStudy> yearOfStudyList)
+    public static DetailDto GetDetailDto(this Student student)
     {
-        return new Models.Student()
+        return new DetailDto()
         {
             Id = student.Id,
             FirstName = student.FirstName,
             LastName = student.LastName,
             Dob = student.Dob,
-            YearOfStudy = yearOfStudyList.Single(x => x.Id == student.SelectedYearOfStudy).Year,
+            YearOfStudy = student.YearOfStudy,
+            Subjects = string.Join(" | ", student.StudentSubjects.Select(x => x.Subject.Name))
         };
     }
 }

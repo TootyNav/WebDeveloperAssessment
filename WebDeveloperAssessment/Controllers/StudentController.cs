@@ -39,7 +39,7 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            return View(student);
+           return View(student.GetDetailDto());
         }
 
         public async Task<IActionResult> Create()
