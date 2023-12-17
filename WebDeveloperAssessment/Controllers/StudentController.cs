@@ -1,8 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebDeveloperAssessment.Data;
 using WebDeveloperAssessment.Models;
+using WebDeveloperAssessment.ModelViews.DTOs.Student;
 
 namespace WebDeveloperAssessment.Controllers
 {
@@ -67,7 +69,26 @@ namespace WebDeveloperAssessment.Controllers
             {
                 return NotFound();
             }
-            return View(student);
+
+            var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+
+            var selectedYearOfStudy = yearOfStudyList.SingleOrDefault(x => x.Year == student.YearOfStudy)?.Id;
+            if (selectedYearOfStudy == null)
+            {
+                return NotFound();
+            }
+
+            var studentDto = new EditDto()
+            {
+                Id = student.Id,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                Dob = student.Dob,
+                YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year"),
+                SelectedYearOfStudy = selectedYearOfStudy.Value
+            };
+
+            return View(studentDto);
         }
 
 
