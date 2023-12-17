@@ -42,21 +42,37 @@ namespace WebDeveloperAssessment.Controllers
             return View(student);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+
+
+            ViewBag.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
+
+            var model = new CreateViewDto()
+            {
+                SelectedYearOfStudy = 1,
+                YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year")
+            };
+
+
+
+            return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Dob")] Student student)
+        public async Task<IActionResult> Create(CreateDto student)
         {
+            var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+
             if (ModelState.IsValid)
             {
-                await _studentService.CreateStudent(student);
+                await _studentService.CreateStudent(student.GetStudentEntity(yearOfStudyList));
 
                 return RedirectToAction(nameof(Index));
             }
+            student.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
             return View(student);
         }
 
@@ -107,7 +123,7 @@ namespace WebDeveloperAssessment.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (! await _studentService.StudentExists(studentDto.Id))
+                    if (!await _studentService.StudentExists(studentDto.Id))
                     {
                         return NotFound();
                     }
