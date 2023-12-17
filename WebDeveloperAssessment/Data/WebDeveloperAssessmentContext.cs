@@ -17,6 +17,7 @@ namespace WebDeveloperAssessment.Data
 
         public DbSet<Student> Student { get; set; } = default!;
         public DbSet<YearOfStudy> YearOfStudy { get; set; } = default!;
+        public DbSet<Subject> Subject { get; set; } = default!;
 
     }
 }
