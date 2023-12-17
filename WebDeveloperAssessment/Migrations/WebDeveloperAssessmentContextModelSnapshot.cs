@@ -47,24 +47,7 @@ namespace WebDeveloperAssessment.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Student");
-                });
-
-            modelBuilder.Entity("WebDeveloperAssessment.Models.Subject", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Subject");
+                    b.ToTable("Student", (string)null);
                 });
 
             modelBuilder.Entity("WebDeveloperAssessment.Models.YearOfStudy", b =>
@@ -81,7 +64,7 @@ namespace WebDeveloperAssessment.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("YearOfStudy");
+                    b.ToTable("YearOfStudy", (string)null);
                 });
 #pragma warning restore 612, 618
         }
