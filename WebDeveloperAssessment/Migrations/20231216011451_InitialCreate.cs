@@ -25,6 +25,16 @@ namespace WebDeveloperAssessment.Migrations
                 {
                     table.PrimaryKey("PK_Student", x => x.Id);
                 });
+
+            migrationBuilder.Sql(@"
+                BULK INSERT dbo.Student
+                FROM 'C:\Users\navid\Downloads\Confidential-WebDeveloperAssessment\Students.csv'
+                WITH
+                (
+                        FORMAT='CSV',
+                        FIRSTROW=2
+                )
+            ");
         }
 
         /// <inheritdoc />
