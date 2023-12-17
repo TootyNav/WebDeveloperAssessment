@@ -7,12 +7,11 @@ namespace WebDeveloperAssessment.Models
         public required int Id { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
-        public int? SubjectId { get; set; }
         public DateOnly Dob { get; set; }
 
         [Display(Name = "Year of Study")]
         public required string YearOfStudy { get; set; }
 
-        public Subject? Subject { get; set; }
+        public ICollection<Subject>? Subjects { get; set; }
     }
 }
