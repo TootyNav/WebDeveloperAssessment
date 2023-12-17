@@ -22,21 +22,6 @@ namespace WebDeveloperAssessment.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("StudentSubject", b =>
-                {
-                    b.Property<int>("StudentsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SubjectsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("StudentsId", "SubjectsId");
-
-                    b.HasIndex("SubjectsId");
-
-                    b.ToTable("StudentSubject");
-                });
-
             modelBuilder.Entity("WebDeveloperAssessment.Models.Student", b =>
                 {
                     b.Property<int>("Id")
@@ -56,11 +41,16 @@ namespace WebDeveloperAssessment.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("int");
+
                     b.Property<string>("YearOfStudy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Student");
                 });
@@ -99,19 +89,18 @@ namespace WebDeveloperAssessment.Migrations
                     b.ToTable("YearOfStudy");
                 });
 
-            modelBuilder.Entity("StudentSubject", b =>
+            modelBuilder.Entity("WebDeveloperAssessment.Models.Student", b =>
                 {
-                    b.HasOne("WebDeveloperAssessment.Models.Student", null)
-                        .WithMany()
-                        .HasForeignKey("StudentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("WebDeveloperAssessment.Models.Subject", "Subject")
+                        .WithMany("Students")
+                        .HasForeignKey("SubjectId");
 
-                    b.HasOne("WebDeveloperAssessment.Models.Subject", null)
-                        .WithMany()
-                        .HasForeignKey("SubjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("WebDeveloperAssessment.Models.Subject", b =>
+                {
+                    b.Navigation("Students");
                 });
 #pragma warning restore 612, 618
         }
