@@ -13,7 +13,7 @@ namespace WebDeveloperAssessment.ModelViews.DTOs.Student
         public DateOnly Dob { get; set; }
 
         [Display(Name = "Year of Study")]
-        public required SelectList YearOfStudy { get; set; }
+        public SelectList? YearOfStudy { get; set; }
 
         public int SelectedYearOfStudy { get; set; }
     }

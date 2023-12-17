@@ -87,18 +87,22 @@ namespace WebDeveloperAssessment.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Dob")] Student student)
+        public async Task<IActionResult> Edit(int id, EditDto student)
         {
             if (id != student.Id)
             {
                 return NotFound();
             }
 
+            var yearOfStudyList = new List<YearOfStudy>();
             if (ModelState.IsValid)
             {
+                yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+
                 try
                 {
-                    _context.Update(student);
+
+                    _context.Update(student.GetStudentEntity(yearOfStudyList));
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -114,6 +118,9 @@ namespace WebDeveloperAssessment.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            student.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
+
             return View(student);
         }
 

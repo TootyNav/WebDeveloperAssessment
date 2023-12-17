@@ -19,5 +19,17 @@ namespace WebDeveloperAssessment.Utilities.Extensions;
             YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year")
         };
     }
+
+    public static Student GetStudentEntity(this EditDto student, IEnumerable<YearOfStudy> yearOfStudyList)
+    {
+        return new Student()
+        {
+            Id = student.Id,
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            Dob = student.Dob,
+            YearOfStudy = yearOfStudyList.Single(x => x.Id == student.SelectedYearOfStudy).Year,
+        };
+    }
 }
 
