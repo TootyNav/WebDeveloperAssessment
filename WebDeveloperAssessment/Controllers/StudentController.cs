@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using WebDeveloperAssessment.Data;
 using WebDeveloperAssessment.Models;
 using WebDeveloperAssessment.ModelViews.DTOs.Student;
+using WebDeveloperAssessment.Services;
 using WebDeveloperAssessment.Utilities.Extensions;
 
 namespace WebDeveloperAssessment.Controllers
@@ -12,15 +13,17 @@ namespace WebDeveloperAssessment.Controllers
     public class StudentController : Controller
     {
         private readonly WebDeveloperAssessmentContext _context;
+        private readonly IStudentService _studentService;
 
-        public StudentController(WebDeveloperAssessmentContext context)
+        public StudentController(WebDeveloperAssessmentContext context, IStudentService studentService)
         {
             _context = context;
+            _studentService = studentService;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Student.ToListAsync());
+            return View(await _studentService.GetStudents());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -30,8 +33,7 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var student = await _studentService.GetStudentById(id.Value);
             if (student == null)
             {
                 return NotFound();
@@ -51,8 +53,8 @@ namespace WebDeveloperAssessment.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(student);
-                await _context.SaveChangesAsync();
+                await _studentService.CreateStudent(student);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(student);
@@ -65,7 +67,7 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student.FindAsync(id);
+            var student = await _studentService.GetStudentById(id.Value);
             if (student == null)
             {
                 return NotFound();
@@ -87,9 +89,9 @@ namespace WebDeveloperAssessment.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditDto student)
+        public async Task<IActionResult> Edit(int id, EditDto studentDto)
         {
-            if (id != student.Id)
+            if (id != studentDto.Id)
             {
                 return NotFound();
             }
@@ -101,13 +103,11 @@ namespace WebDeveloperAssessment.Controllers
 
                 try
                 {
-
-                    _context.Update(student.GetStudentEntity(yearOfStudyList));
-                    await _context.SaveChangesAsync();
+                    await _studentService.UpdateStudent(studentDto.GetStudentEntity(yearOfStudyList));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StudentExists(student.Id))
+                    if (! await _studentService.StudentExists(studentDto.Id))
                     {
                         return NotFound();
                     }
@@ -119,9 +119,9 @@ namespace WebDeveloperAssessment.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            student.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
+            studentDto.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
 
-            return View(student);
+            return View(studentDto);
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -131,8 +131,8 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var student = await _context.Student
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var student = await _studentService.GetStudentById(id.Value);
+
             if (student == null)
             {
                 return NotFound();
@@ -145,19 +145,13 @@ namespace WebDeveloperAssessment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var student = await _context.Student.FindAsync(id);
+            var student = await _studentService.GetStudentById(id);
             if (student != null)
             {
-                _context.Student.Remove(student);
+                await _studentService.DeleteStudent(student);
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool StudentExists(int id)
-        {
-            return _context.Student.Any(e => e.Id == id);
         }
     }
 }
