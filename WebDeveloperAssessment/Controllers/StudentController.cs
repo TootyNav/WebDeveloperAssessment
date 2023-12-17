@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using WebDeveloperAssessment.Data;
 using WebDeveloperAssessment.Models;
 using WebDeveloperAssessment.ModelViews.DTOs.Student;
+using WebDeveloperAssessment.Utilities.Extensions;
 
 namespace WebDeveloperAssessment.Controllers
 {
@@ -78,15 +79,7 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var studentDto = new EditDto()
-            {
-                Id = student.Id,
-                FirstName = student.FirstName,
-                LastName = student.LastName,
-                Dob = student.Dob,
-                YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year"),
-                SelectedYearOfStudy = selectedYearOfStudy.Value
-            };
+            var studentDto = student.GetStudentEditDto(selectedYearOfStudy.Value, yearOfStudyList);
 
             return View(studentDto);
         }
