@@ -1,4 +1,4 @@
-﻿@model WebDeveloperAssessment.Models.Student
+﻿@model WebDeveloperAssessment.ModelViews.DTOs.Student.DetailDto
 
 @{
     ViewData["Title"] = "Delete";
@@ -28,6 +28,18 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Dob)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.YearOfStudy)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.YearOfStudy)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Subjects)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Subjects)
         </dd>
     </dl>
 

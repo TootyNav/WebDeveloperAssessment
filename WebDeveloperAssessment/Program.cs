@@ -11,6 +11,8 @@ builder.Services.AddDbContext<WebDeveloperAssessmentContext>(options =>
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<IYearOfStudyService, YearOfStudyService>();
+builder.Services.AddScoped<ISubjectService, SubjectService>();
 
 var app = builder.Build();
 

@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using WebDeveloperAssessment.Data;
-using WebDeveloperAssessment.Models;
 using WebDeveloperAssessment.ModelViews.DTOs.Student;
 using WebDeveloperAssessment.Services;
 using WebDeveloperAssessment.Utilities.Extensions;
@@ -12,18 +10,21 @@ namespace WebDeveloperAssessment.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly WebDeveloperAssessmentContext _context;
         private readonly IStudentService _studentService;
+        private readonly IYearOfStudyService _yearOfStudyService;
+        private readonly ISubjectService _SubjectService;
 
-        public StudentController(WebDeveloperAssessmentContext context, IStudentService studentService)
+        public StudentController(IStudentService studentService, IYearOfStudyService yearOfStudyService, ISubjectService subjectService)
         {
-            _context = context;
             _studentService = studentService;
+            _yearOfStudyService = yearOfStudyService;
+            _SubjectService = subjectService;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _studentService.GetStudents());
+            var students = await _studentService.GetStudentsLazyLoad();
+            return View(students.Select(x => x.GetDetailDto()));
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -44,18 +45,16 @@ namespace WebDeveloperAssessment.Controllers
 
         public async Task<IActionResult> Create()
         {
-            var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
-
-
-            ViewBag.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
+            var yearOfStudyList = await _yearOfStudyService.GetYearOfStudy();
+            var subjects = await _SubjectService.GetSubjects();
 
             var model = new CreateViewDto()
             {
                 SelectedYearOfStudy = 1,
-                YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year")
+                YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year"),
+                SelectedSubject = 1,
+                Subjects = new SelectList(subjects, "Id", "Name")
             };
-
-
 
             return View(model);
         }
@@ -64,7 +63,8 @@ namespace WebDeveloperAssessment.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateDto student)
         {
-            var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+            var yearOfStudyList = await _yearOfStudyService.GetYearOfStudy();
+            var subjects = await _SubjectService.GetSubjects();
 
             if (ModelState.IsValid)
             {
@@ -73,6 +73,7 @@ namespace WebDeveloperAssessment.Controllers
                 return RedirectToAction(nameof(Index));
             }
             student.YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year");
+            student.Subjects = new SelectList(subjects, "Id", "Year");
             return View(student);
         }
 
@@ -83,13 +84,14 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var student = await _studentService.GetStudentById(id.Value);
+            var student = await _studentService.GetStudentByIdLazyLoad(id.Value);
             if (student == null)
             {
                 return NotFound();
             }
 
-            var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+            var yearOfStudyList = await _yearOfStudyService.GetYearOfStudy();
+            var subjects = await _SubjectService.GetSubjects();
 
             var selectedYearOfStudy = yearOfStudyList.SingleOrDefault(x => x.Year == student.YearOfStudy)?.Id;
             if (selectedYearOfStudy == null)
@@ -97,7 +99,7 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var studentDto = student.GetStudentEditDto(selectedYearOfStudy.Value, yearOfStudyList);
+            var studentDto = student.GetStudentEditDto(selectedYearOfStudy.Value, yearOfStudyList, subjects);
 
             return View(studentDto);
         }
@@ -112,11 +114,9 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var yearOfStudyList = new List<YearOfStudy>();
+            var yearOfStudyList = await _yearOfStudyService.GetYearOfStudy();
             if (ModelState.IsValid)
             {
-                yearOfStudyList = await _context.YearOfStudy.ToListAsync();
-
                 try
                 {
                     await _studentService.UpdateStudent(studentDto.GetStudentEntity(yearOfStudyList));
@@ -147,14 +147,14 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var student = await _studentService.GetStudentById(id.Value);
+            var student = await _studentService.GetStudentByIdLazyLoad(id.Value);
 
             if (student == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(student.GetDetailDto());
         }
 
         [HttpPost, ActionName("Delete")]

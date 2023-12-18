@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using WebDeveloperAssessment.Data;
-using WebDeveloperAssessment.Models;
 using WebDeveloperAssessment.ModelViews.DTOs.Student;
 using WebDeveloperAssessment.Services;
 using WebDeveloperAssessment.Utilities.Extensions;
@@ -18,13 +11,13 @@ namespace WebDeveloperAssessment.Controllers.API
     [ApiController]
     public class StudentController : ControllerBase
     {
-        private readonly WebDeveloperAssessmentContext _context;
         private readonly IStudentService _studentService;
+        private readonly IYearOfStudyService _yearOfStudyService;
 
-        public StudentController(WebDeveloperAssessmentContext context, IStudentService studentService)
+        public StudentController(IStudentService studentService, IYearOfStudyService yearOfStudyService)
         {
-            _context = context;
             _studentService = studentService;
+            _yearOfStudyService = yearOfStudyService;
         }
 
         [HttpGet]
@@ -46,7 +39,7 @@ namespace WebDeveloperAssessment.Controllers.API
                 return NotFound();
             }
 
-            return student.GetDetailDto();
+            return Ok(student.GetDetailDto());
         }
 
 
@@ -60,7 +53,7 @@ namespace WebDeveloperAssessment.Controllers.API
 
             try
             {
-                var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+                var yearOfStudyList = await _yearOfStudyService.GetYearOfStudy();
 
                 await _studentService.UpdateStudentApi(student.GetStudentEntity(yearOfStudyList));
             }
@@ -76,15 +69,17 @@ namespace WebDeveloperAssessment.Controllers.API
                 }
             }
 
-            return NoContent();
+            return Ok(student);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Student>> PostStudent(Student student)
+        public async Task<ActionResult<DetailDto>> PostStudent(CreateApiDto createApiDto)
         {
-            await _studentService.CreateStudent(student);
+            var yearOfStudyList = await _yearOfStudyService.GetYearOfStudy();
+            var CreatedStudent = await _studentService.CreateStudentReturnStudent(createApiDto.GetStudentEntity(yearOfStudyList));
+            var student = await _studentService.GetStudentByIdLazyLoad(CreatedStudent.Id);
 
-            return CreatedAtAction("GetStudent", new { id = student.Id }, student);
+            return CreatedAtAction("GetStudent", new { id = student.Id }, student.GetDetailDto());
         }
 
         [HttpDelete("{id}")]
@@ -98,7 +93,7 @@ namespace WebDeveloperAssessment.Controllers.API
 
             await _studentService.DeleteStudent(student);
 
-            return NoContent();
+            return Ok();
         }
     }
 }

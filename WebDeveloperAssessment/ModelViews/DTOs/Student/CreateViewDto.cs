@@ -14,7 +14,9 @@ namespace WebDeveloperAssessment.ModelViews.DTOs.Student
 
         [Display(Name = "Year of Study")]
         public SelectList? YearOfStudy { get; set; }
-
         public int SelectedYearOfStudy { get; set; }
+
+        public SelectList? Subjects { get; set; }
+        public int SelectedSubject { get; set; }
     }
 }

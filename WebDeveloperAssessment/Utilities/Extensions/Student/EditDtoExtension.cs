@@ -7,7 +7,7 @@ namespace WebDeveloperAssessment.Utilities.Extensions;
 
     public static class EditDtoExtension
 {
-    public static EditDto GetStudentEditDto(this Models.Student student, int selectedYearOfStudy, IEnumerable<YearOfStudy> yearOfStudyList)
+    public static EditDto GetStudentEditDto(this Models.Student student, int selectedYearOfStudy, IEnumerable<YearOfStudy> yearOfStudyList, IEnumerable<Subject> subjects)
     {
         return new EditDto()
         {
@@ -16,7 +16,9 @@ namespace WebDeveloperAssessment.Utilities.Extensions;
             LastName = student.LastName,
             Dob = student.Dob,
             SelectedYearOfStudy = selectedYearOfStudy,
-            YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year")
+            YearOfStudy = new SelectList(yearOfStudyList, "Id", "Year"),
+            SelectedSubject = student.StudentSubjects.FirstOrDefault().SubjectId,
+            Subjects = new SelectList(subjects, "Id", "Name")
         };
     }
 

@@ -45,6 +45,14 @@ namespace WebDeveloperAssessment.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<Student> CreateStudentReturnStudent(Student student)
+        {
+            _context.Add(student);
+            await _context.SaveChangesAsync();
+
+            return student;
+        }
+
         public async Task UpdateStudent(Student student)
         {
             _context.Update(student);
