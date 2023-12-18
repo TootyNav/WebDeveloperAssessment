@@ -13,5 +13,7 @@ namespace WebDeveloperAssessment.ModelViews.DTOs.Student
         public DateOnly Dob { get; set; }
 
         public int YearOfStudy { get; set; }
+        public int Subject { get; set; }
+
     }
 }
