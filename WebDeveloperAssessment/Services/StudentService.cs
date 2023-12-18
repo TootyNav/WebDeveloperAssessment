@@ -24,9 +24,14 @@ namespace WebDeveloperAssessment.Services
             return await _context.Student.AnyAsync(x => x.Id == id);
         }
 
-        public async Task<Student?> GetStudentById(int id)
+        public async Task<Student?> GetStudentByIdLazyLoad(int id)
         {
             return await _context.Student.Include(x => x.StudentSubjects).ThenInclude(x => x.Subject).FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<Student?> GetStudentById(int id)
+        {
+            return await _context.Student.FindAsync(id);
         }
 
         public async Task CreateStudent(Student student)
@@ -41,10 +46,18 @@ namespace WebDeveloperAssessment.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateStudentApi(Student student)
+        {
+            _context.Entry(student).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteStudent(Student student)
         {
             _context.Student.Remove(student);
             await _context.SaveChangesAsync();
         }
+
+
     }
 }

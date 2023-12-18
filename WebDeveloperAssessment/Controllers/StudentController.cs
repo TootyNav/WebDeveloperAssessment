@@ -33,7 +33,7 @@ namespace WebDeveloperAssessment.Controllers
                 return NotFound();
             }
 
-            var student = await _studentService.GetStudentById(id.Value);
+            var student = await _studentService.GetStudentByIdLazyLoad(id.Value);
             if (student == null)
             {
                 return NotFound();
