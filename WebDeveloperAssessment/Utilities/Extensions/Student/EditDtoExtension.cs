@@ -31,6 +31,7 @@ namespace WebDeveloperAssessment.Utilities.Extensions;
             LastName = student.LastName,
             Dob = student.Dob,
             YearOfStudy = yearOfStudyList.Single(x => x.Id == student.SelectedYearOfStudy).Year,
+            StudentSubjects = new List<StudentSubject>() { new StudentSubject() { StudentId = student.Id, SubjectId = student.SelectedSubject } }
         };
     }
 }
