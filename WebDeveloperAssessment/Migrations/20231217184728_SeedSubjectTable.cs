@@ -11,13 +11,22 @@ namespace WebDeveloperAssessment.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                BULK INSERT dbo.Subject
-                FROM 'C:\Users\navid\Downloads\Confidential-WebDeveloperAssessment\Subjects.csv'
-                WITH
-                (
-                        FORMAT='CSV',
-                        FIRSTROW=2
-                )
+                USE [WebDeveloperAssessment]
+
+                GO
+                SET IDENTITY_INSERT [dbo].[Subject] ON 
+                GO
+                INSERT [dbo].[Subject] ([Id], [Name]) VALUES (1, N'Biology')
+                GO
+                INSERT [dbo].[Subject] ([Id], [Name]) VALUES (2, N'Chemistry')
+                GO
+                INSERT [dbo].[Subject] ([Id], [Name]) VALUES (3, N'Geography')
+                GO
+                INSERT [dbo].[Subject] ([Id], [Name]) VALUES (4, N'History')
+                GO
+                INSERT [dbo].[Subject] ([Id], [Name]) VALUES (5, N'Physics')
+                GO
+                SET IDENTITY_INSERT [dbo].[Subject] OFF
             ");
         }
 
