@@ -9,6 +9,7 @@ namespace WebDeveloperAssessment.Services
         Task<Student?> GetStudentById(int id);
         Task<Student?> GetStudentByIdLazyLoad(int id);
         Task<List<Student>> GetStudents();
+        Task<List<Student>> GetStudentsLazyLoad();
         Task<bool> StudentExists(int id);
         Task UpdateStudent(Student student);
         Task UpdateStudentApi(Student student);

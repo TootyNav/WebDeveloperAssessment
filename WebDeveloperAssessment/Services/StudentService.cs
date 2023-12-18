@@ -19,6 +19,11 @@ namespace WebDeveloperAssessment.Services
             return await _context.Student.ToListAsync();
         }
 
+        public async Task<List<Student>> GetStudentsLazyLoad()
+        {
+            return await _context.Student.Include(x => x.StudentSubjects).ThenInclude(x => x.Subject).ToListAsync();
+        }
+
         public async Task<bool> StudentExists(int id)
         {
             return await _context.Student.AnyAsync(x => x.Id == id);

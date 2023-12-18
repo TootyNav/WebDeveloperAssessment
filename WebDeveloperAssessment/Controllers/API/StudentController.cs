@@ -4,10 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using WebDeveloperAssessment.Data;
 using WebDeveloperAssessment.Models;
+using WebDeveloperAssessment.ModelViews.DTOs.Student;
 using WebDeveloperAssessment.Services;
+using WebDeveloperAssessment.Utilities.Extensions;
 
 namespace WebDeveloperAssessment.Controllers.API
 {
@@ -25,37 +28,41 @@ namespace WebDeveloperAssessment.Controllers.API
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStudent()
+        public async Task<ActionResult<IEnumerable<DetailDto>>> GetStudent()
         {
-            return await _studentService.GetStudents();
+            var student = await _studentService.GetStudentsLazyLoad();
+
+            return Ok(student.Select(x => x.GetDetailDto()));
         }
 
+
         [HttpGet("{id}")]
-        public async Task<ActionResult<Student>> GetStudent(int id)
+        public async Task<ActionResult<DetailDto>> GetStudent(int id)
         {
-            var student = await _studentService.GetStudentById(id);
+            var student = await _studentService.GetStudentByIdLazyLoad(id);
 
             if (student == null)
             {
                 return NotFound();
             }
 
-            return student;
+            return student.GetDetailDto();
         }
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutStudent(int id, Student student)
+        public async Task<IActionResult> PutStudent(int id, EditApiDto student)
         {
             if (id != student.Id)
             {
                 return BadRequest();
             }
 
-
             try
             {
-                await _studentService.UpdateStudentApi(student);
+                var yearOfStudyList = await _context.YearOfStudy.ToListAsync();
+
+                await _studentService.UpdateStudentApi(student.GetStudentEntity(yearOfStudyList));
             }
             catch (DbUpdateConcurrencyException)
             {
